@@ -399,6 +399,23 @@ const getPincodeByEmail= async (req, res) => {
           res.status(500).json({ message: "Error verifying OTP" });
         }
       };
+      const getvillageblockbypincode=async (req,res)=>
+        {
+        const {pincode}=req.params;
+        try {
+            const village = await Village.findOne({ pincode });
+            
+            if (!village) {
+              return res.status(404).json({ error: 'village not found' });
+            }
+            
+            res.json({ pincode: village.block });
+          } catch (error) {
+            console.error("Error retrieving pincode:", error);
+            res.status(500).json({ error: 'Internal server error' });
+
+      }
+    }
       
 module.exports = {
     login,
@@ -426,4 +443,5 @@ module.exports = {
     viewComplaints,
     getPincodeByEmail,
     verifyOTP,
+    generateVerificationCode,
 };

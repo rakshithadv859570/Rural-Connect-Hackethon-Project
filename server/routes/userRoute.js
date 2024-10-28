@@ -25,6 +25,7 @@ const {
   viewComplaints,
   getPincodeByEmail,
   verifyOTP,
+  generateVerificationCode,
 } = require("../controller/userController.js");
 
 const authenticateToken = require("../middleware/authMiddleware.js");
@@ -56,6 +57,8 @@ route.get("/village/:villageId/reports", authenticateToken, villageReports);
 route.delete("/delete/:id", authenticateToken, deleteUser);
 route.post("/village/:villageId/complain", authenticateToken, complain); // Protect the complaint submission route
 route.get("/village/:villageId/complaints", authenticateToken, viewComplaints);
-route.get('/getPincodeByEmail/:email',getPincodeByEmail); 
+route.get('/getPincodeByEmail/:email',getPincodeByEmail);
+route.get('/verifyOTP',verifyOTP);
+route.get('/generateVerificationCode',generateVerificationCode);
 
 module.exports = route;
