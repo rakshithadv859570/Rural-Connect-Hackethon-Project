@@ -40,9 +40,8 @@ function Register() {
         }
         throw new Error(errorMessage);
       }
-
-      alert("OTP has been sent to your email!");
-      navigate('/verify-otp', { state: { email: formData.email } }); // Redirect to VerifyOtp page
+      //alert("OTP has been sent to your email!");
+      navigate('/login', { state: { email: formData.email } }); // Redirect to VerifyOtp page
 
     } catch (error) {
       console.error("Error:", error.message);

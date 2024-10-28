@@ -7,6 +7,7 @@ import Register from './Register';
 import Village from './village';
 import VillageRedirect from  './VillageRedirect';
 import VerifyOtp from './verify-otp';
+import Infrastructure from './infrastructure';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
       <Route path="/village/:villageId" element={<Village />} />
       <Route path="/villageRedirect" element={<VillageRedirect />} /> {/* Add the redirect route */}
       <Route path="/verify-otp" element={<VerifyOtp />} />
+      <Route path="/infrastructure" element={<Infrastructure />} />
     </Routes>
   );
 }

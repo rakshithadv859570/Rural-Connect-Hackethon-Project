@@ -67,60 +67,64 @@ const transporter = nodemailer.createTransport({
   
   const register = async (req, res) => {
     const { fname, lname, email, pincode, password } = req.body;
-  
+
     // Basic validations
     if (!fname || !lname || !email || !pincode || !password) {
-      return res.status(400).json({ message: "All fields are required" });
+        return res.status(400).json({ message: "All fields are required" });
     }
     if (password.length < 6) {
-      return res.status(400).json({ message: "Password must be at least 6 characters long" });
+        return res.status(400).json({ message: "Password must be at least 6 characters long" });
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return res.status(400).json({ message: "Invalid email format" });
+        return res.status(400).json({ message: "Invalid email format" });
     }
     if (pincode.length !== 6 || isNaN(pincode)) {
-      return res.status(400).json({ message: "Pincode must be a 6-digit number" });
+        return res.status(400).json({ message: "Pincode must be a 6-digit number" });
     }
-  
-    try {
-      const existingUser = await User.findOne({ email });
-      if (existingUser) {
-        return res.status(400).json({ message: "Email already registered" });
-      }
-  
-      // Hash the password
-      const hashedPassword = password;
-  
-      // Save user without verification status
-      const user = new User({
-        fname,
-        lname,
-        email,
-        pincode,
-        password: hashedPassword,
-        isVerified: false,
-      });
-      await user.save();
-  
-      // Generate and save OTP
-      const verificationCode = generateVerificationCode();
-      await OTP.deleteMany({ email }); // Delete any existing OTP for this email
-  
-      const otpDoc = new OTP({ email, otp: verificationCode });
-      await otpDoc.save(); // This will trigger the email sending
-  
-      res.status(201).json({
-        message: "User registered successfully, please check your email for OTP.",
-      });
-    } catch (error) {
-      console.error("Registration error:", error);
-      res.status(500).json({ message: "Error registering user" });
-    }
-  };
-  
-// Get Village Information
 
+    try {
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: "Email already registered" });
+        }
+
+        // Hash the password before saving
+        const hashedPassword = password;
+        const user = new User({ fname, lname, email, pincode, password: hashedPassword });
+        await user.save();
+
+        // Check for existing village data
+        const existingVillage = await Village.findOne({ pincode });
+        if (!existingVillage) {
+            // Fetch village data if not present
+            const villageResponse = await axios.get(`https://api.postalpincode.in/pincode/${pincode}`);
+            const villageData = villageResponse.data;
+
+            // Check if pincode data is valid
+            if (villageData[0].Status === "Success" && villageData[0].PostOffice.length > 0) {
+                const postOffice = villageData[0].PostOffice[0]; // Take the first post office for simplicity
+                const village = new Village({
+                    pincode: postOffice.Pincode,
+                    name: postOffice.Name,
+                    district: postOffice.District,
+                    division: postOffice.Division,
+                    region: postOffice.Region,
+                    block: postOffice.Block,
+                    state: postOffice.State,
+                });
+                await village.save();
+            }
+        }
+
+        // Return user data excluding password
+        const { password: _, ...userData } = user.toObject(); // Exclude password from the returned object
+        res.status(201).json({ message: "User registered successfully", user: userData });
+    } catch (error) {
+        console.error("Registration error:", error); // Log the error for debugging
+        res.status(500).json({ message: "Error registering user" });
+    }
+};
 const village = async (req, res) => {
     const { villageId } = req.params; // Here villageId is expected to be the pincode
 
