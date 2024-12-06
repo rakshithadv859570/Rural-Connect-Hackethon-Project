@@ -5,6 +5,7 @@ import Home from './home';
 import Login from './login';
 import Register from './Register';
 import Village from './village';
+import villagedata from './villagedata.jsx';
 import VillageRedirect from  './VillageRedirect';
 import VerifyOtp from './verify-otp';
 import Infrastructure from './infrastructure';

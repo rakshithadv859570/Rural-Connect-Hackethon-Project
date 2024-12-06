@@ -44,7 +44,7 @@ route.get("/village/:villageId/services", authenticateToken, serviceList);
 route.get("/village/:villageId/services/:serviceId/apply", authenticateToken, serviceApply);
 route.get("/village/:villageId/services/:applicationId/status", authenticateToken, serviceStatus);
 route.get("/village/:villageId/feedback", authenticateToken, feedback);
-route.post("/village/:villageId/feedback", authenticateToken, feedbackSubmit);
+route.post("/village/:villageId/feedback", authenticateToken, feedbackSubmit);  
 route.get("/village/:villageId/feedback/:feedbackId", authenticateToken, feedbackOne);
 route.get("/assistant/chat", authenticateToken, Chat);
 route.post("/assistant/chat", authenticateToken, getChat);
